@@ -39,56 +39,30 @@
     android:text="Backward" />
 
 <Button
-    android:id="@+id/buttonFwd"
+    android:id="@+id/buttonRight"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_alignBottom="@+id/buttonStop"
-    android:layout_marginBottom="28dp"
-    android:layout_marginRight="56dp"
-    android:layout_toLeftOf="@+id/buttonStop"
-    android:text="Forward" />
+    android:layout_above="@+id/buttonFwd"
+    android:layout_alignRight="@+id/editText1"
+    android:layout_marginRight="25dp"
+    android:text="Right" />
 
 <Button
-    android:id="@+id/buttonStop"
+    android:id="@+id/buttonLeft"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_above="@+id/buttonFwd"
+    android:layout_alignParentLeft="true"
+    android:text="Left" />
+
+<Button
+    android:id="@+id/buttonFwd"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_above="@+id/buttonBw"
     android:layout_alignParentRight="true"
-    android:text="Brake" />
-
-<ToggleButton
-    android:id="@+id/toggleLeft"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBaseline="@+id/buttonStop"
-    android:layout_alignBottom="@+id/buttonStop"
-    android:layout_alignParentLeft="true"
-    android:text="Left"
-    android:textOn="Left"
-    android:textOff="Left" />
-
-<ToggleButton
-    android:id="@+id/toggleRight"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBaseline="@+id/toggleStraight"
-    android:layout_alignBottom="@+id/toggleStraight"
-    android:layout_marginLeft="15dp"
-    android:layout_toRightOf="@+id/toggleStraight"
-    android:text="Right" 
-     android:textOn="Right"
-    android:textOff="Right"/>
-
-<ToggleButton
-    android:id="@+id/toggleStraight"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBaseline="@+id/toggleLeft"
-    android:layout_alignBottom="@+id/toggleLeft"
-    android:layout_marginLeft="17dp"
-    android:layout_toRightOf="@+id/toggleLeft"
-    android:text="Staight" 
-     android:textOn="Straight"
-    android:textOff="Straight"/>
+    android:layout_marginBottom="53dp"
+    android:layout_marginRight="15dp"
+    android:text="Forward" />
 
 </RelativeLayout>
