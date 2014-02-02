@@ -207,11 +207,12 @@ int main(int argc, char *argv[])
                 syslog (LOG_NOTICE, " socket init failed\n");
                 exit(1);
         }
-        
+ 
+        char state[255] = "stop";       
 
         while(1)
 	{
-		char mesg[1000] = {};
+		char mesg[15] = {};
 		socklen_t len;
 	        struct sockaddr_in cliaddr;
                 len = sizeof(cliaddr);
@@ -225,42 +226,120 @@ int main(int argc, char *argv[])
 		}
                 else
                 {
-			syslog (LOG_NOTICE, "%s\n", mesg);
-                        if (strcmp(mesg, "FWDSTRAIGHT") == 0)
-                        {
-				write (fd, &fwd, 1);
-				write (fd, &straight, 1);
-                        }
-                        if (strcmp(mesg, "FWDRIGHT") == 0)
-                        {
-				write (fd, &fwd, 1);
-				write (fd, &right, 1);
-                        }
-                        if (strcmp(mesg, "FWDLEFT") == 0)
-                        {
-				write (fd, &fwd, 1);
-				write (fd, &left, 1);
-                        }
-
-
-                        if (strcmp(mesg, "BACKSTRAIGHT") == 0)
-                        {
-				write (fd, &bw, 1);
-				write (fd, &straight, 1);
-                        }
-                        if (strcmp(mesg, "BACKRIGHT") == 0)
-                        {
-				write (fd, &bw, 1);
-				write (fd, &right, 1);
-                        }
-                        if (strcmp(mesg, "BACKLEFT") == 0)
-                        {
-				write (fd, &bw, 1);
-				write (fd, &left, 1);
-                        }
+			//syslog (LOG_NOTICE, "%s\n", mesg);
                         if (strcmp(mesg, "STOP") == 0)
                         {
-				write (fd, &stp, 1);
+                                //if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &stp, 1);
+                                }
+                        }
+                        else if (strcmp(mesg, "LEFT") == 0)
+                        {
+                                //if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &left, 1);
+                                }
+                        }
+                        else if (strcmp(mesg, "STRAIGHT") == 0)
+                        {
+                                //if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &straight, 1);
+                                }
+                        }
+                        else if (strcmp(mesg, "RIGHT") == 0)
+                        {
+                                //if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &right, 1);
+                                }
+                        }
+                        else if (strcmp(mesg, "FWD") == 0)
+                        {
+                                //if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &fwd, 1);
+                                }
+                        } 
+                        else if (strcmp(mesg, "BACK") == 0)
+                        {
+                                //if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &bw, 1);
+                                }
+                        }
+                        else if (strcmp(mesg, "FWDSTRAIGHT") == 0)
+                        {
+                                if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &fwd, 1);
+					write (fd, &straight, 1);
+                                }
+                        }
+                        else if (strcmp(mesg, "FWDRIGHT") == 0)
+                        {
+                                if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &fwd, 1);
+					write (fd, &right, 1);
+                                }
+                        }
+                        else if (strcmp(mesg, "FWDLEFT") == 0)
+                        {
+                                if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &fwd, 1);
+					write (fd, &left, 1);
+                                }
+                        }
+                        else if (strcmp(mesg, "BACKSTRAIGHT") == 0)
+                        {
+                                if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &bw, 1);
+					write (fd, &straight, 1);
+                                }
+                        }
+                        else if (strcmp(mesg, "BACKRIGHT") == 0)
+                        {
+                                if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &bw, 1);
+					write (fd, &right, 1);
+                                }
+                        }
+                        else if (strcmp(mesg, "BACKLEFT") == 0)
+                        {
+                                if (strcmp(state, mesg) != 0)
+                                {
+					syslog (LOG_NOTICE, "%s\n", mesg);
+                                        strcpy(state, mesg);
+					write (fd, &bw, 1);
+					write (fd, &left, 1);
+                                }
                         }
                 }
 
