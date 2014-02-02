@@ -30,8 +30,10 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -48,9 +50,8 @@ public class SmartCarActivity extends Activity {
 	Button bwButton;
 	Button stopButton;
 
-	ToggleButton leftToggle;
-	ToggleButton rightToggle;
-	ToggleButton straightToggle;
+	Button rightButton;
+	Button leftButton;
 
 	private MjpegView mv = null;
 	private boolean suspending = false;
@@ -72,13 +73,9 @@ public class SmartCarActivity extends Activity {
 		connectButton = (Button) findViewById(R.id.buttonConnect);
 		fwdButton = (Button) findViewById(R.id.buttonFwd);
 		bwButton = (Button) findViewById(R.id.buttonBw);
-		stopButton = (Button) findViewById(R.id.buttonStop);
-		leftToggle = (ToggleButton) findViewById(R.id.toggleLeft);
-		rightToggle = (ToggleButton) findViewById(R.id.toggleRight);
-		straightToggle = (ToggleButton) findViewById(R.id.toggleStraight);
+		rightButton = (Button) findViewById(R.id.buttonRight);
+		leftButton = (Button) findViewById(R.id.buttonLeft);
 
-		straightToggle.setChecked(true);
-		
 		serverIP = (EditText) findViewById(R.id.editText1);
 		web = (WebView) findViewById(R.id.webView1);
 
@@ -89,42 +86,6 @@ public class SmartCarActivity extends Activity {
 					.permitAll().build();
 			StrictMode.setThreadPolicy(policy);
 		}
-		leftToggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				// TODO Auto-generated method stub
-				if (isChecked) {
-					rightToggle.setChecked(false);
-					straightToggle.setChecked(false);
-				}
-			}
-		});
-		straightToggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				// TODO Auto-generated method stub
-				if (isChecked) {
-					leftToggle.setChecked(false);
-					rightToggle.setChecked(false);
-				}
-			}
-		});
-		rightToggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				// TODO Auto-generated method stub
-				if (isChecked) {
-					leftToggle.setChecked(false);
-					straightToggle.setChecked(false);
-				}
-			}
-		});
 
 		connectButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -136,153 +97,375 @@ public class SmartCarActivity extends Activity {
 			}
 		});
 
-		fwdButton.setOnClickListener(new OnClickListener() {
+		rightButton.setOnTouchListener(new OnTouchListener() {
 
 			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub-
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN: {
+					Thread thread = new Thread(new Runnable() {
 
-				Thread thread = new Thread(new Runnable() {
-
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						{
-							try {
-								cliSock = new DatagramSocket();
-								// OutputStream out = cliSock.getOutputStream();
-								// out.write("FWD".getBytes());
-								InetAddress receiverAddress = null;
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							{
 								try {
-									receiverAddress = InetAddress
-											.getByName(serverIP.getText()
-													.toString());
-								} catch (UnknownHostException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
+									cliSock = new DatagramSocket();
+									// OutputStream out =
+									// cliSock.getOutputStream();
+									// out.write("FWD".getBytes());
+									InetAddress receiverAddress = null;
+									try {
+										receiverAddress = InetAddress
+												.getByName(serverIP.getText()
+														.toString());
+									} catch (UnknownHostException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
 
-								String cmd = "FWD";
-								if (rightToggle.isChecked())
-								{
-									cmd += "RIGHT";
+									String cmd = "RIGHT";
+
+									DatagramPacket packet = new DatagramPacket(
+											cmd.getBytes(),
+											cmd.getBytes().length,
+											receiverAddress, SERVERPORT);
+									cliSock = new DatagramSocket();
+									cliSock.send(packet);
+									Log.d("SmartCar", "Right Command");
+								} catch (IOException e) {
+									e.printStackTrace();
 								}
-								else if (leftToggle.isChecked())
-								{
-									cmd += "LEFT";
-								}
-								else if (straightToggle.isChecked())
-								{
-									cmd += "STRAIGHT";
-								}
-								DatagramPacket packet = new DatagramPacket(cmd
-										.getBytes(), cmd.getBytes().length,
-										receiverAddress, SERVERPORT);
-								cliSock = new DatagramSocket();
-								cliSock.send(packet);
-								Log.d("SmartCar", "Forward Command");
-							} catch (IOException e) {
-								e.printStackTrace();
 							}
 						}
-					}
-				});
+					});
 
-				thread.run();
+					thread.run();
+					break;
+				}
+				case MotionEvent.ACTION_UP: {
+					Thread thread = new Thread(new Runnable() {
 
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							{
+								try {
+									cliSock = new DatagramSocket();
+									// OutputStream out =
+									// cliSock.getOutputStream();
+									// out.write("FWD".getBytes());
+									InetAddress receiverAddress = null;
+									try {
+										receiverAddress = InetAddress
+												.getByName(serverIP.getText()
+														.toString());
+									} catch (UnknownHostException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+									String cmd = "STRAIGHT";
+									DatagramPacket packet = new DatagramPacket(
+											cmd.getBytes(),
+											cmd.getBytes().length,
+											receiverAddress, SERVERPORT);
+									cliSock = new DatagramSocket();
+									cliSock.send(packet);
+									Log.d("SmartCar", "RIght Button Released");
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+
+					thread.run();
+					break;
+				}
+				}
+
+				return false;
 			}
 		});
 
-		bwButton.setOnClickListener(new OnClickListener() {
+		leftButton.setOnTouchListener(new OnTouchListener() {
 
 			@Override
-			public void onClick(View v) {
-				Thread thread = new Thread(new Runnable() {
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN: {
+					Thread thread = new Thread(new Runnable() {
 
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						{
-							try {
-								// OutputStream out = cliSock.getOutputStream();
-								// out.write("BACK".getBytes());
-								InetAddress receiverAddress = null;
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							{
 								try {
-									receiverAddress = InetAddress
-											.getByName(serverIP.getText()
-													.toString());
-								} catch (UnknownHostException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
+									cliSock = new DatagramSocket();
+									// OutputStream out =
+									// cliSock.getOutputStream();
+									// out.write("FWD".getBytes());
+									InetAddress receiverAddress = null;
+									try {
+										receiverAddress = InetAddress
+												.getByName(serverIP.getText()
+														.toString());
+									} catch (UnknownHostException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+									String cmd = "LEFT";
+
+									DatagramPacket packet = new DatagramPacket(
+											cmd.getBytes(),
+											cmd.getBytes().length,
+											receiverAddress, SERVERPORT);
+									cliSock = new DatagramSocket();
+									cliSock.send(packet);
+									Log.d("SmartCar", "Left Command");
+								} catch (IOException e) {
+									e.printStackTrace();
 								}
-								String cmd = "BACK";
-								if (rightToggle.isChecked())
-								{
-									cmd += "RIGHT";
-								}
-								else if (leftToggle.isChecked())
-								{
-									cmd += "LEFT";
-								}
-								else if (straightToggle.isChecked())
-								{
-									cmd += "STRAIGHT";
-								}
-								DatagramPacket packet = new DatagramPacket(cmd
-										.getBytes(), cmd.getBytes().length,
-										receiverAddress, SERVERPORT);
-								cliSock = new DatagramSocket();
-								cliSock.send(packet);
-								Log.d("SmartCar", "Back Command");
-							} catch (IOException e) {
-								e.printStackTrace();
 							}
 						}
-					}
-				});
-				thread.run();
+					});
+
+					thread.run();
+					break;
+				}
+				case MotionEvent.ACTION_UP: {
+					Thread thread = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							{
+								try {
+									cliSock = new DatagramSocket();
+									// OutputStream out =
+									// cliSock.getOutputStream();
+									// out.write("FWD".getBytes());
+									InetAddress receiverAddress = null;
+									try {
+										receiverAddress = InetAddress
+												.getByName(serverIP.getText()
+														.toString());
+									} catch (UnknownHostException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+									String cmd = "STRAIGHT";
+									DatagramPacket packet = new DatagramPacket(
+											cmd.getBytes(),
+											cmd.getBytes().length,
+											receiverAddress, SERVERPORT);
+									cliSock = new DatagramSocket();
+									cliSock.send(packet);
+									Log.d("SmartCar", "Left Button Released");
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+
+					thread.run();
+					break;
+				}
+				}
+
+				return false;
 			}
 		});
 
-		stopButton.setOnClickListener(new OnClickListener() {
-
+		fwdButton.setOnTouchListener(new OnTouchListener() {
 			@Override
-			public void onClick(View v) {
-				Thread thread = new Thread(new Runnable() {
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN: {
+					Thread thread = new Thread(new Runnable() {
 
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						{
-							try {
-								// OutputStream out = cliSock.getOutputStream();
-								// out.write("STOP".getBytes());
-								InetAddress receiverAddress = null;
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							{
 								try {
-									receiverAddress = InetAddress
-											.getByName(serverIP.getText()
-													.toString());
-								} catch (UnknownHostException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
+									cliSock = new DatagramSocket();
+									// OutputStream out =
+									// cliSock.getOutputStream();
+									// out.write("FWD".getBytes());
+									InetAddress receiverAddress = null;
+									try {
+										receiverAddress = InetAddress
+												.getByName(serverIP.getText()
+														.toString());
+									} catch (UnknownHostException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+									String cmd = "FWD";
+
+									DatagramPacket packet = new DatagramPacket(
+											cmd.getBytes(),
+											cmd.getBytes().length,
+											receiverAddress, SERVERPORT);
+									cliSock = new DatagramSocket();
+									cliSock.send(packet);
+									Log.d("SmartCar", "Forward Command");
+								} catch (IOException e) {
+									e.printStackTrace();
 								}
-								String cmd = "STOP";
-								DatagramPacket packet = new DatagramPacket(cmd
-										.getBytes(), cmd.getBytes().length,
-										receiverAddress, SERVERPORT);
-								cliSock = new DatagramSocket();
-								cliSock.send(packet);
-								Log.d("SmartCar", "STOP Command");
-							} catch (IOException e) {
-								e.printStackTrace();
 							}
 						}
-					}
-				});
-				thread.run();
+					});
+
+					thread.run();
+					break;
+				}
+				case MotionEvent.ACTION_UP: {
+					Thread thread = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							{
+								try {
+									cliSock = new DatagramSocket();
+									// OutputStream out =
+									// cliSock.getOutputStream();
+									// out.write("FWD".getBytes());
+									InetAddress receiverAddress = null;
+									try {
+										receiverAddress = InetAddress
+												.getByName(serverIP.getText()
+														.toString());
+									} catch (UnknownHostException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+									String cmd = "STOP";
+									DatagramPacket packet = new DatagramPacket(
+											cmd.getBytes(),
+											cmd.getBytes().length,
+											receiverAddress, SERVERPORT);
+									cliSock = new DatagramSocket();
+									cliSock.send(packet);
+									Log.d("SmartCar", "Forward Button Released");
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+
+					thread.run();
+					break;
+				}
+
+				}
+				return false;
 			}
 		});
 
+		bwButton.setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN: {
+					Thread thread = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							{
+								try {
+									cliSock = new DatagramSocket();
+									// OutputStream out =
+									// cliSock.getOutputStream();
+									// out.write("FWD".getBytes());
+									InetAddress receiverAddress = null;
+									try {
+										receiverAddress = InetAddress
+												.getByName(serverIP.getText()
+														.toString());
+									} catch (UnknownHostException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+									String cmd = "BACK";
+
+									DatagramPacket packet = new DatagramPacket(
+											cmd.getBytes(),
+											cmd.getBytes().length,
+											receiverAddress, SERVERPORT);
+									cliSock = new DatagramSocket();
+									cliSock.send(packet);
+									Log.d("SmartCar", "Back Command");
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+
+					thread.run();
+					break;
+				}
+				case MotionEvent.ACTION_UP: {
+					Thread thread = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							{
+								try {
+									cliSock = new DatagramSocket();
+									// OutputStream out =
+									// cliSock.getOutputStream();
+									// out.write("FWD".getBytes());
+									InetAddress receiverAddress = null;
+									try {
+										receiverAddress = InetAddress
+												.getByName(serverIP.getText()
+														.toString());
+									} catch (UnknownHostException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+									String cmd = "STOP";
+									DatagramPacket packet = new DatagramPacket(
+											cmd.getBytes(),
+											cmd.getBytes().length,
+											receiverAddress, SERVERPORT);
+									cliSock = new DatagramSocket();
+									cliSock.send(packet);
+									Log.d("SmartCar", "Back Button Released");
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+
+					thread.run();
+					break;
+				}
+				}
+				return false;
+			}
+		});
 	}
 
 	public void onStart() {
@@ -291,7 +474,7 @@ public class SmartCarActivity extends Activity {
 		super.onStart();
 	}
 
-	 /*
+	/*
 	 * public void onPause() { if(DEBUG) Log.d(TAG,"onPause()");
 	 * super.onPause(); if(mv!=null){ if(mv.isStreaming()){ mv.stopPlayback();
 	 * suspending = true; } } } public void onStop() { if(DEBUG)
